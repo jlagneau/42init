@@ -16,6 +16,7 @@ DEB_NAME  = debug_PROJECT_NAME
 
 ISGIT     := $(shell find . -name ".git" -type d)
 HASTAGS   := $(shell git tag)
+
 ifneq (, $(strip $(ISGIT)))
 ifneq (, $(strip $(HASTAGS)))
 	VER   := $(shell git describe --tags `git rev-list --tags --max-count=1`)
@@ -32,9 +33,6 @@ HEAD_PATH = include/
 CC        = gcc
 CFLAGS    = -I$(HEAD_PATH) -I$(LIB)$(HEAD_PATH) -Wall -Wextra -Werror
 LDFLAGS   = -L$(LIB)
-
-AR        = ar
-ARFLAGS   = rcs
 
 RM        = rm
 RMFLAGS   = -rf
