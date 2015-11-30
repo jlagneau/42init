@@ -4,8 +4,8 @@
 # CHECK
 #
 
-# arg number not equal 2
-if [[ "$#" -ne 2 ]]; then
+# arg number not equal 1
+if [[ "$#" -ne 1 ]]; then
 	echo "Usage : $_ [PROJECT_NAME]"
 	exit 1
 fi
@@ -29,6 +29,8 @@ exec_dir=$(dirname `perl -e 'use Cwd "abs_path";print abs_path(shift)' $0`)
 # RUN
 #
 
+echo '\033[0;32mCreating project files...\033[0m'
+
 # Create directory
 mkdir ${project_name}
 
@@ -46,10 +48,10 @@ echo `whoami` > auteur
 echo "# "${project_name} > README.md
 
 # Initialize git and add libft
-git init . > /dev/null
-git submodule add https://github.com/`whoami`/libft.git > /dev/null
-git add -A . > /dev/null
-git commit -m "Initial commit" /dev/null
+git init --quiet .
+git submodule --quiet add https://github.com/`whoami`/libft.git
+git add -A .
+git commit --quiet -m "Initial commit"
 
 # Return to previous directory
 popd
