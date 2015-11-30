@@ -10,7 +10,7 @@ example :
 
     % echo $PATH
     ~/.bin/:...
-    % cd ~/.bin && git clone https://github.com/jlagneau/42init.git && ln -s ~/.bin/42init/init ./42
+    % cd ~/.bin && git clone https://github.com/jlagneau/42init.git && ln -s ~/.bin/42init/init.sh ./42
     % cd ~/workspace
 	% 42 my_super_project && cd my_super_project
 

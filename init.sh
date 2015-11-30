@@ -1,4 +1,20 @@
-#!/bin/zsh
+#!/usr/bin/env zsh
+
+#
+# CHECK
+#
+
+# arg number not equal 2
+if [[ "$#" -ne 2 ]]; then
+	echo "Usage : $_ [PROJECT_NAME]"
+	exit 1
+fi
+
+# arg is already an existing file
+if [[ -e "$1" ]]; then
+	echo "Cannot create directory " ${project_name} ". A file with this name already exists."
+	exit 1
+fi
 
 #
 # INIT
@@ -12,11 +28,6 @@ exec_dir=$(dirname `perl -e 'use Cwd "abs_path";print abs_path(shift)' $0`)
 #
 # RUN
 #
-
-if [[ -e ${project_name} ]]; then
-	echo "Cannot create directory " ${project_name} ". A file with this name already exists."
-	exit 1
-fi
 
 # Create directory
 mkdir ${project_name}
