@@ -8,38 +8,37 @@
 project_name=$1
 # get the real path of the exec script
 exec_dir=$(dirname `perl -e 'use Cwd "abs_path";print abs_path(shift)' $0`)
-#
-tmp_file="/tmp/42init-$$"
 
 #
 # RUN
 #
 
-if [[ -d ${project_name} ]]; then
-	echo "Directory " ${project_name} " already exists." && exit 1
+if [[ -e ${project_name} ]]; then
+	echo "Cannot create directory " ${project_name} ". A file with this name already exists."
+	exit 1
 fi
 
+# Create directory
 mkdir ${project_name}
 
+# Move into directory
 pushd ${project_name}
 
-cp -a ${exec_dir}/skel/* ./
+# Copy skeleton into directory and search and replace program name
+env GLOBIGNORE=". .." cp -a ${exec_dir}/skel/* ${exec_dir}/skel/.* ./
+`perl -pi -e s,__PROJECT_NAME__,${project_name},g ./**/*(.)`
 
-mv gitignore .gitignore
-
-sed s/PROJECT_NAME/"${project_name}"/g Makefile > ${tmp_file} && mv ${tmp_file} Makefile
-sed s/PROJECT_NAME/"${project_name}"/g .gitignore > ${tmp_file} && mv ${tmp_file} .gitignore
-
+# Create the auteur file
 echo `whoami` > auteur
 
+# Create a README.md file
 echo "# "${project_name} > README.md
 
-git init .
+# Initialize git and add libft
+git init . > /dev/null
+git submodule add https://github.com/`whoami`/libft.git > /dev/null
+git add -A . > /dev/null
+git commit -m "Initial commit" /dev/null
 
-git submodule add https://github.com/`whoami`/libft.git
-
-git add -A .
-
-git commit -m "Initial commit"
-
+# Return to previous directory
 popd

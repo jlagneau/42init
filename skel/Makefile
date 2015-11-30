@@ -6,13 +6,13 @@
 #    By: jlagneau <jlagneau@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2013/11/21 08:29:58 by jlagneau          #+#    #+#              #
-#    Updated: 2015/11/30 15:25:01 by jlagneau         ###   ########.fr        #
+#    Updated: 2015/11/30 19:43:16 by jlagneau         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
 # Variables
-NAME      = PROJECT_NAME
-DEB_NAME  = debug_PROJECT_NAME
+NAME      = __PROJECT_NAME__
+DEB_NAME  = debug___PROJECT_NAME__
 
 ISGIT     := $(shell find . -name ".git" -type d)
 HASTAGS   := $(shell git tag)
