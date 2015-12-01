@@ -114,7 +114,7 @@ re: fclean all
 
 -include $(DEPS)
 
-.PHONY: all clean debug fclean lib lib_debug norme re redebug verbose
+.PHONY: all clean debug fclean lib lib_debug norme re redebug
 
 ifndef VERBOSE
 .SILENT:
