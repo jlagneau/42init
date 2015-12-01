@@ -7,7 +7,7 @@
 #    By: jlagneau <jlagneau@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2015/12/01 06:20:42 by jlagneau          #+#    #+#              #
-#    Updated: 2015/12/01 06:39:00 by jlagneau         ###   ########.fr        #
+#    Updated: 2015/12/01 10:18:38 by jlagneau         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -57,7 +57,7 @@ pushd ${project_name}
 
 # Copy skeleton into directory and search and replace program name
 env GLOBIGNORE=". .." cp -a ${exec_dir}/skel/* ${exec_dir}/skel/.* ./
-`perl -pi -e s,__PROJECT_NAME__,${project_name},g ./**/*(.)`
+`perl -pi -e s,__PROJECT_NAME__,${project_name},g ./**/.?*(.)`
 
 # Create the auteur file
 echo `whoami` > auteur
