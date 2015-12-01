@@ -6,7 +6,7 @@
 #    By: jlagneau <jlagneau@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2013/11/21 08:29:58 by jlagneau          #+#    #+#              #
-#    Updated: 2015/12/01 06:02:00 by jlagneau         ###   ########.fr        #
+#    Updated: 2015/12/01 13:16:20 by jlagneau         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -31,7 +31,8 @@ SRCS_PATH = src/
 HEAD_PATH = include/
 
 CC        = gcc
-CFLAGS    = -I$(HEAD_PATH) -I$(LIB)$(HEAD_PATH) -Wall -Wextra -Werror
+IFLAGS    = -I$(HEAD_PATH) -I$(LIB)$(HEAD_PATH)
+CFLAGS    = -MMD -Wall -Wextra -Werror -pedantic
 LDFLAGS   = -L$(LIB)
 
 RM        = rm
@@ -41,6 +42,7 @@ RMFLAGS   = -rf
 SRCS     := $(shell find src -type f)
 OBJS      = $(addprefix $(OBJS_PATH), $(notdir $(SRCS:.c=.o)))
 DEB_OBJS  = $(addprefix $(OBJS_PATH), $(notdir $(SRCS:.c=_debug.o)))
+DEPS      = $(OBJS:.o=.d)
 
 # Print informations about the library
 $(info :: Project: $(NAME))
@@ -52,15 +54,17 @@ endif
 endif
 
 # Rules
-$(NAME): CFLAGS += -g3
+$(NAME): CFLAGS += -O3
 $(NAME): LDFLAGS += -lft
 $(NAME): $(OBJS)
+	printf "    [\033[32mDONE\033[0m]\n"
 	make -C $(LIB)
 	printf "[\033[36m%20s\033[0m] Linking and indexing" $(NAME)
 	$(CC) $^ $(LDFLAGS) -o $@
 	printf " [\033[32mDONE\033[0m]\n"
 
 $(DEB_NAME): $(DEB_OBJS)
+	printf "    [\033[32mDONE\033[0m]\n"
 	make -C $(LIB) debug
 	printf "[\033[36m%20s\033[0m] Linking and indexing" $(DEB_NAME)
 	$(CC) $^ $(LDFLAGS) -o $@
@@ -70,17 +74,15 @@ $(OBJS_PATH)%.o: $(SRCS_PATH)%.c
 	if [ ! -d $(OBJS_PATH) ]; then \
 	mkdir -p $(OBJS_PATH); \
 	printf "[\033[36m%20s\033[0m] Compiling objects" $(NAME); \
-	printf "    [\033[32mDONE\033[0m]\n"; \
 	fi;
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(IFLAGS) $(CFLAGS) -c $< -o $@
 
 $(OBJS_PATH)%_debug.o: $(SRCS_PATH)%.c
 	if [ ! -d $(OBJS_PATH) ]; then \
 	mkdir -p $(OBJS_PATH); \
-	printf "[\033[36m%20s\033[0m] Compiling objects" $(NAME); \
-	printf "    [\033[32mDONE\033[0m]\n"; \
+	printf "[\033[36m%20s\033[0m] Compiling objects" $(DEB_NAME); \
 	fi;
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(IFLAGS) $(CFLAGS) -c $< -o $@
 
 debug: CFLAGS += -g3
 debug: LDFLAGS += -lft_debug
@@ -109,6 +111,8 @@ fclean:
 	make -C $(LIB) fclean
 
 re: fclean all
+
+-include $(DEPS)
 
 .PHONY: all clean debug fclean lib lib_debug norme re redebug
 
