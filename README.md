@@ -18,4 +18,4 @@ example :
 
 Don't hesitate to fork to suit your needs
 
-You can replace everything in skel. You can use `__PROJECT_NAME__` placeholder in your skel file to replace by your project name.
+You can replace everything in skel. You can use `__PROJECT_NAME__` placeholder in your skel files for your real project name.
