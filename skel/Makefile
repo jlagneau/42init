@@ -6,7 +6,7 @@
 #    By: jlagneau <jlagneau@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2013/11/21 08:29:58 by jlagneau          #+#    #+#              #
-#    Updated: 2015/12/01 13:16:20 by jlagneau         ###   ########.fr        #
+#    Updated: 2015/12/01 13:19:30 by jlagneau         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -32,7 +32,7 @@ HEAD_PATH = include/
 
 CC        = gcc
 IFLAGS    = -I$(HEAD_PATH) -I$(LIB)$(HEAD_PATH)
-CFLAGS    = -MMD -Wall -Wextra -Werror -pedantic
+CFLAGS    = -MD -Wall -Wextra -Werror -pedantic
 LDFLAGS   = -L$(LIB)
 
 RM        = rm
