@@ -1,4 +1,22 @@
 #!/usr/bin/env zsh
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    init.sh                                            :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: jlagneau <jlagneau@student.42.fr>          +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2015/12/01 06:20:42 by jlagneau          #+#    #+#              #
+#    Updated: 2015/12/01 06:39:00 by jlagneau         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
+echo '\033[0;32m   __ __ ___   _       _ __ \033[0m'
+echo '\033[0;32m  / // /|__ \ (_)___  (_) /_\033[0m'
+echo '\033[0;32m / // /___/ // / __ \/ / __/\033[0m'
+echo '\033[0;32m/__  __/ __// / / / / / /_  \033[0m'
+echo '\033[0;32m  /_/ /____/_/_/ /_/_/\__/  \033[0m'
+echo ''
 
 #
 # CHECK
@@ -29,7 +47,7 @@ exec_dir=$(dirname `perl -e 'use Cwd "abs_path";print abs_path(shift)' $0`)
 # RUN
 #
 
-echo '\033[0;32mCreating project files...\033[0m'
+echo 'Creating project files... [\033[0;33m'${project_name}'\033[0m]'
 
 # Create directory
 mkdir ${project_name}
@@ -48,6 +66,7 @@ echo `whoami` > auteur
 echo "# "${project_name} > README.md
 
 # Initialize git and add libft
+echo 'Initialize git repository...'
 git init --quiet .
 git submodule --quiet add https://github.com/`whoami`/libft.git
 git add -A .
@@ -55,3 +74,5 @@ git commit --quiet -m "Initial commit"
 
 # Return to previous directory
 popd
+
+echo 'Project ready !'
