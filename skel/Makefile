@@ -6,47 +6,53 @@
 #    By: jlagneau <jlagneau@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2013/11/21 08:29:58 by jlagneau          #+#    #+#              #
-#    Updated: 2015/12/01 13:55:08 by jlagneau         ###   ########.fr        #
+#    Updated: 2015/12/02 09:43:16 by jlagneau         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
 # Variables
 NAME      = __PROJECT_NAME__
-DEB_NAME  = debug___PROJECT_NAME__
 
+# Information variables
 ISGIT     := $(shell find . -name ".git" -type d)
 HASTAGS   := $(shell git tag)
-
 ifneq (, $(strip $(ISGIT)))
 ifneq (, $(strip $(HASTAGS)))
-	VER   := $(shell git describe --tags `git rev-list --tags --max-count=1`)
+VER      := $(shell git describe --tags `git rev-list --tags --max-count=1`)
 else
-	VER   := $(shell git rev-parse --short HEAD)
+VER      := $(shell git rev-parse --short HEAD)
 endif
-	GDATE := $(shell git show -s --format="%ci" HEAD)
+GDATE    := $(shell git show -s --format="%ci" HEAD)
 endif
 
+# Directories
 LIB       = libft/
 
-OBJS_PATH = bin/
 SRCS_PATH = src/
 HEAD_PATH = include/
 
-CC        = gcc
-IFLAGS    = -I$(HEAD_PATH) -I$(LIB)$(HEAD_PATH)
-CFLAGS    = -MD -Wall -Wextra -Werror -pedantic
-LDFLAGS   = -L$(LIB)
+OBJS_PATH = .obj/
+DEPS_PATH = .dep/
 
+# Exec
+CC        = gcc
 RM        = rm
+
+# Flags
+IFLAGS    = -I$(HEAD_PATH) -I$(LIB)$(HEAD_PATH)
+CFLAGS    = -Wall -Wextra -Werror -pedantic -ansi
+LDFLAGS   = -L$(LIB)
+DEPSFLAGS = -MMD -MF"$(DEPS_PATH)$(notdir $(@:.o=.d))"
 RMFLAGS   = -rf
 
-# Sources files
+# Files
 SRCS     := $(shell find src -type f)
+DEPS      = $(addprefix $(DEPS_PATH), $(notdir $(SRCS:.c=.d)))
 OBJS      = $(addprefix $(OBJS_PATH), $(notdir $(SRCS:.c=.o)))
-DEB_OBJS  = $(addprefix $(OBJS_PATH), $(notdir $(SRCS:.c=_debug.o)))
-DEPS      = $(OBJS:.o=.d)
+DEB_OBJS  = $(OBJS:.o=_debug.o)
+DEB_DEPS  = $(DEB_OBJS:.o=.d)
 
-# Print informations about the library
+# Print informations about the project
 $(info :: Project: $(NAME))
 ifneq (, $(strip $(ISGIT)))
     $(info :: Version : $(VER))
@@ -57,38 +63,28 @@ endif
 $(NAME): CFLAGS += -O3
 $(NAME): LDFLAGS += -lft
 $(NAME): $(OBJS)
-	@printf "[\033[36m%20s\033[0m] Compiling objects" $(NAME)
-	@printf "    [\033[32mDONE\033[0m]\n"
 	@make -C $(LIB)
-	@printf "[\033[36m%20s\033[0m] Linking objects     " $(NAME)
-	@printf " [\033[32mDONE\033[0m]\n"
 	$(CC) $^ $(LDFLAGS) -o $@
 
-$(DEB_NAME): $(DEB_OBJS)
-	@printf "[\033[36m%20s\033[0m] Compiling objects" $(DEB_NAME)
-	@printf "    [\033[32mDONE\033[0m]\n"
+debug: CFLAGS += -g3
+debug: LDFLAGS += -lft_debug
+debug: $(DEB_OBJS)
 	@make -C $(LIB) debug
-	@printf "[\033[36m%20s\033[0m] Linking objects     " $(DEB_NAME)
-	@printf " [\033[32mDONE\033[0m]\n"
 	$(CC) $^ $(LDFLAGS) -o $@
 
 $(OBJS_PATH)%.o: $(SRCS_PATH)%.c
 	@if [ ! -d $(OBJS_PATH) ]; then \
 	mkdir -p $(OBJS_PATH); \
+	mkdir -p $(DEPS_PATH); \
 	fi;
-	$(CC) $(IFLAGS) $(CFLAGS) -c $< -o $@
+	$(CC) $(IFLAGS) $(CFLAGS) $(DEPSFLAGS) -c $< -o $@
 
 $(OBJS_PATH)%_debug.o: $(SRCS_PATH)%.c
 	@if [ ! -d $(OBJS_PATH) ]; then \
 	mkdir -p $(OBJS_PATH); \
+	mkdir -p $(DEPS_PATH); \
 	fi;
-	$(CC) $(IFLAGS) $(CFLAGS) -c $< -o $@
-
-debug: CFLAGS += -g3
-debug: LDFLAGS += -lft_debug
-debug: $(DEB_NAME)
-
-redebug: fclean debug
+	$(CC) $(IFLAGS) $(CFLAGS) $(DEPSFLAGS) -c $< -o $@
 
 norme:
 	@norminette ./**/*.{h,c}
@@ -96,26 +92,19 @@ norme:
 all: $(NAME)
 
 clean:
-	$(RM) $(RMFLAGS) $(OBJS_PATH)
-	@printf "[\033[36m%20s\033[0m] Removing objects" $(NAME)
-	@printf "     [\033[32mDONE\033[0m]\n"
+	$(RM) $(RMFLAGS) $(OBJS_PATH) $(DEPS_PATH)
 	@make -C $(LIB) clean
 
 fclean:
-	$(RM) $(RMFLAGS) $(OBJS_PATH)
-	@printf "[\033[36m%20s\033[0m] Removing objects" $(NAME)
-	@printf "     [\033[32mDONE\033[0m]\n"
+	$(RM) $(RMFLAGS) $(OBJS_PATH) $(DEPS_PATH)
 	$(RM) $(RMFLAGS) $(NAME) $(DEB_NAME)
-	@printf "[\033[36m%20s\033[0m] Removing binary" $(NAME)
-	@printf "      [\033[32mDONE\033[0m]\n"
 	@make -C $(LIB) fclean
 
 re: fclean all
 
+redebug: fclean debug
+
 -include $(DEPS)
+-include $(DEB_DEPS)
 
-.PHONY: all clean debug fclean lib lib_debug norme re redebug
-
-ifndef VERBOSE
-.SILENT:
-endif
+.PHONY: all clean fclean norme re redebug

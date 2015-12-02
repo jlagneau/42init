@@ -1,3 +1,4 @@
-bin
+.obj/
+.dep/
 __PROJECT_NAME__
 debug___PROJECT_NAME__
