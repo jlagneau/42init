@@ -6,7 +6,7 @@
 #    By: jlagneau <jlagneau@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2013/11/21 08:29:58 by jlagneau          #+#    #+#              #
-#    Updated: 2015/12/02 09:43:16 by jlagneau         ###   ########.fr        #
+#    Updated: 2015/12/02 10:22:18 by jlagneau         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -40,7 +40,7 @@ RM        = rm
 
 # Flags
 IFLAGS    = -I$(HEAD_PATH) -I$(LIB)$(HEAD_PATH)
-CFLAGS    = -Wall -Wextra -Werror -pedantic -ansi
+CFLAGS    = -Wall -Wextra -Werror -pedantic
 LDFLAGS   = -L$(LIB)
 DEPSFLAGS = -MMD -MF"$(DEPS_PATH)$(notdir $(@:.o=.d))"
 RMFLAGS   = -rf
