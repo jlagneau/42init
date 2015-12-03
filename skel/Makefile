@@ -6,7 +6,7 @@
 #    By: jlagneau <jlagneau@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2013/11/21 08:29:58 by jlagneau          #+#    #+#              #
-#    Updated: 2015/12/03 07:55:04 by jlagneau         ###   ########.fr        #
+#    Updated: 2015/12/03 08:03:46 by jlagneau         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -50,8 +50,9 @@ RMFLAGS   = -rf
 SRCS     := $(shell find src -type f)
 DEPS      = $(addprefix $(DEPS_PATH), $(notdir $(SRCS:.c=.d)))
 OBJS      = $(addprefix $(OBJS_PATH), $(notdir $(SRCS:.c=.o)))
+
 DEB_OBJS  = $(OBJS:.o=_debug.o)
-DEB_DEPS  = $(DEB_OBJS:.o=.d)
+DEB_DEPS  = $(addprefix $(DEPS_PATH), $(notdir $(DEB_OBJS:.o=.d)))
 
 # Print informations about the project
 $(info :: Project: $(NAME))
