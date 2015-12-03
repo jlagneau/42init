@@ -6,7 +6,7 @@
 #    By: jlagneau <jlagneau@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2013/11/21 08:29:58 by jlagneau          #+#    #+#              #
-#    Updated: 2015/12/02 10:22:18 by jlagneau         ###   ########.fr        #
+#    Updated: 2015/12/03 07:55:04 by jlagneau         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -16,6 +16,7 @@ NAME      = __PROJECT_NAME__
 # Information variables
 ISGIT     := $(shell find . -name ".git" -type d)
 HASTAGS   := $(shell git tag)
+
 ifneq (, $(strip $(ISGIT)))
 ifneq (, $(strip $(HASTAGS)))
 VER      := $(shell git describe --tags `git rev-list --tags --max-count=1`)
@@ -73,17 +74,13 @@ debug: $(DEB_OBJS)
 	$(CC) $^ $(LDFLAGS) -o $@
 
 $(OBJS_PATH)%.o: $(SRCS_PATH)%.c
-	@if [ ! -d $(OBJS_PATH) ]; then \
-	mkdir -p $(OBJS_PATH); \
-	mkdir -p $(DEPS_PATH); \
-	fi;
+	@mkdir -p $(OBJS_PATH)
+	@mkdir -p $(DEPS_PATH)
 	$(CC) $(IFLAGS) $(CFLAGS) $(DEPSFLAGS) -c $< -o $@
 
 $(OBJS_PATH)%_debug.o: $(SRCS_PATH)%.c
-	@if [ ! -d $(OBJS_PATH) ]; then \
-	mkdir -p $(OBJS_PATH); \
-	mkdir -p $(DEPS_PATH); \
-	fi;
+	@mkdir -p $(OBJS_PATH)
+	@mkdir -p $(DEPS_PATH)
 	$(CC) $(IFLAGS) $(CFLAGS) $(DEPSFLAGS) -c $< -o $@
 
 norme:
