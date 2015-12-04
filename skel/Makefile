@@ -6,7 +6,7 @@
 #    By: jlagneau <jlagneau@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2013/11/21 08:29:58 by jlagneau          #+#    #+#              #
-#    Updated: 2015/12/03 08:03:46 by jlagneau         ###   ########.fr        #
+#    Updated: 2015/12/04 08:46:16 by jlagneau         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -28,6 +28,7 @@ endif
 
 # Directories
 LIB       = libft/
+LIBH_PATH = libft/include/
 
 SRCS_PATH = src/
 HEAD_PATH = include/
@@ -40,14 +41,15 @@ CC        = gcc
 RM        = rm
 
 # Flags
-IFLAGS    = -I$(HEAD_PATH) -I$(LIB)$(HEAD_PATH)
 CFLAGS    = -Wall -Wextra -Werror -pedantic
 LDFLAGS   = -L$(LIB)
 DEPSFLAGS = -MMD -MF"$(DEPS_PATH)$(notdir $(@:.o=.d))"
+IFLAGS    = -I$(HEAD_PATH) -I$(LIBH_PATH)
 RMFLAGS   = -rf
 
 # Files
 SRCS     := $(shell find src -type f)
+
 DEPS      = $(addprefix $(DEPS_PATH), $(notdir $(SRCS:.c=.d)))
 OBJS      = $(addprefix $(OBJS_PATH), $(notdir $(SRCS:.c=.o)))
 
@@ -60,6 +62,9 @@ ifneq (, $(strip $(ISGIT)))
     $(info :: Version : $(VER))
     $(info :: Last modifications : $(GDATE))
 endif
+
+# Phony
+.PHONY: all clean fclean norme re redebug
 
 # Rules
 $(NAME): CFLAGS += -O3
@@ -75,13 +80,11 @@ debug: $(DEB_OBJS)
 	$(CC) $^ $(LDFLAGS) -o $@
 
 $(OBJS_PATH)%.o: $(SRCS_PATH)%.c
-	@mkdir -p $(OBJS_PATH)
-	@mkdir -p $(DEPS_PATH)
+	@mkdir -p $(OBJS_PATH) $(DEPS_PATH)
 	$(CC) $(IFLAGS) $(CFLAGS) $(DEPSFLAGS) -c $< -o $@
 
 $(OBJS_PATH)%_debug.o: $(SRCS_PATH)%.c
-	@mkdir -p $(OBJS_PATH)
-	@mkdir -p $(DEPS_PATH)
+	@mkdir -p $(OBJS_PATH) $(DEPS_PATH)
 	$(CC) $(IFLAGS) $(CFLAGS) $(DEPSFLAGS) -c $< -o $@
 
 norme:
@@ -104,5 +107,3 @@ redebug: fclean debug
 
 -include $(DEPS)
 -include $(DEB_DEPS)
-
-.PHONY: all clean fclean norme re redebug
