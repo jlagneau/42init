@@ -27,7 +27,7 @@ GDATE    := $(shell git show -s --format="%ci" HEAD)
 endif
 
 # Directories
-LIB       = libft/
+LIB_PATH  = libft/
 LIBH_PATH = libft/include/
 
 SRCS_PATH = src/
@@ -38,14 +38,14 @@ DEPS_PATH = .dep/
 
 # Exec
 CC        = gcc
-RM        = rm
+RM        = rm -rf
 
 # Flags
 CFLAGS    = -Wall -Wextra -Werror -pedantic
-LDFLAGS   = -L$(LIB)
+CPPFLAGS  = -I$(HEAD_PATH) -I$(LIBH_PATH)
+LDFLAGS   = -L$(LIB_PATH)
+LDLIBS    =
 DEPSFLAGS = -MMD -MF"$(DEPS_PATH)$(notdir $(@:.o=.d))"
-IFLAGS    = -I$(HEAD_PATH) -I$(LIBH_PATH)
-RMFLAGS   = -rf
 
 # Files
 SRCS     := $(shell find src -type f)
@@ -68,24 +68,26 @@ endif
 
 # Rules
 $(NAME): CFLAGS += -O3
-$(NAME): LDFLAGS += -lft
+$(NAME): LDLIBS += -lft
 $(NAME): $(OBJS)
-	@make -C $(LIB)
-	$(CC) $^ $(LDFLAGS) -o $@
+	@-git submodule update --init --recursive
+	@make -C $(LIB_PATH)
+	$(CC) $^ $(LDFLAGS) $(LDLIBS) -o $@
 
 debug: CFLAGS += -g3
-debug: LDFLAGS += -lft_debug
+debug: LDLIBS += -lft_debug
 debug: $(DEB_OBJS)
-	@make -C $(LIB) debug
-	$(CC) $^ $(LDFLAGS) -o $@
+	@-git submodule update --init --recursive
+	@make -C $(LIB_PATH) debug
+	$(CC) $^ $(LDFLAGS) $(LDLIBS) -o $@
 
 $(OBJS_PATH)%.o: $(SRCS_PATH)%.c
 	@mkdir -p $(OBJS_PATH) $(DEPS_PATH)
-	$(CC) $(IFLAGS) $(CFLAGS) $(DEPSFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEPSFLAGS) -c $< -o $@
 
 $(OBJS_PATH)%_debug.o: $(SRCS_PATH)%.c
 	@mkdir -p $(OBJS_PATH) $(DEPS_PATH)
-	$(CC) $(IFLAGS) $(CFLAGS) $(DEPSFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEPSFLAGS) -c $< -o $@
 
 norme:
 	@norminette ./**/*.{h,c}
@@ -93,13 +95,13 @@ norme:
 all: $(NAME)
 
 clean:
-	$(RM) $(RMFLAGS) $(OBJS_PATH) $(DEPS_PATH)
-	@make -C $(LIB) clean
+	$(RM) $(OBJS_PATH) $(DEPS_PATH)
+	@make -C $(LIB_PATH) clean
 
 fclean:
-	$(RM) $(RMFLAGS) $(OBJS_PATH) $(DEPS_PATH)
-	$(RM) $(RMFLAGS) $(NAME) $(DEB_NAME)
-	@make -C $(LIB) fclean
+	$(RM) $(OBJS_PATH) $(DEPS_PATH)
+	$(RM) $(NAME) $(DEB_NAME)
+	@make -C $(LIB_PATH) fclean
 
 re: fclean all
 
