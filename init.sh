@@ -24,15 +24,15 @@ echo ''
 
 # arg number not equal 1
 if [[ "$#" -ne 1 ]]; then
-	echo "Usage : $_ [PROJECT_NAME]"
-	exit 1
+    echo "Usage : $_ [PROJECT_NAME]"
+    exit 1
 fi
 
 # arg is already an existing file
 if [[ -e "$1" ]]; then
-	echo "Cannot create directory $1."
+    echo "Cannot create directory $1."
     echo "A file with this name already exists."
-	exit 1
+    exit 1
 fi
 
 #
