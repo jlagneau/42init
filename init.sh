@@ -30,7 +30,8 @@ fi
 
 # arg is already an existing file
 if [[ -e "$1" ]]; then
-	echo "Cannot create directory " ${project_name} ". A file with this name already exists."
+	echo "Cannot create directory $1."
+    echo "A file with this name already exists."
 	exit 1
 fi
 
@@ -62,6 +63,10 @@ find . -type f -exec perl -pi -e s,__PROJECT_NAME__,${project_name},g {} \;
 # Create the auteur file
 echo `whoami` > auteur
 
+# Create include file
+mkdir -p include
+touch include/${project_name}.h
+
 # Create a README.md file
 echo "# "${project_name} > README.md
 
@@ -70,7 +75,7 @@ echo 'Initialize git repository...'
 git init --quiet .
 git submodule --quiet add https://github.com/`whoami`/libft.git
 git add -A .
-git commit --quiet -m "Initial commit"
+git commit --quiet -m "[42init] Initial commit: Hello World"
 
 # Return to previous directory
 popd
