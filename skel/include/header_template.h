@@ -1,0 +1,4 @@
+#ifndef __PROJECT_NAME_UPPERCASE___H
+# define __PROJECT_NAME_UPPERCASE___H
+
+#endif

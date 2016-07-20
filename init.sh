@@ -7,7 +7,7 @@
 #    By: jlagneau <jlagneau@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2015/12/01 06:20:42 by jlagneau          #+#    #+#              #
-#    Updated: 2015/12/03 13:45:49 by jlagneau         ###   ########.fr        #
+#    Updated: 2016/07/20 03:22:08 by jlagneau         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -41,6 +41,7 @@ fi
 
 # get name of the project to init
 project_name=$1
+project_name_uppercase="$(echo "$1" | tr '[:lower:]' '[:upper:]')"
 # get the real path of the exec script
 exec_dir=$(dirname `perl -e 'use Cwd "abs_path";print abs_path(shift)' $0`)
 
@@ -59,6 +60,8 @@ pushd ${project_name}
 # Copy skeleton into directory and search and replace program name
 env GLOBIGNORE=". .." cp -a ${exec_dir}/skel/* ${exec_dir}/skel/.* ./
 find . -type f -exec perl -pi -e s,__PROJECT_NAME__,${project_name},g {} \;
+find . -type f -exec perl -pi -e s,__PROJECT_NAME_UPPERCASE__,${project_name_uppercase},g {} \;
+mv include/header_template.h include/${project_name}.h
 
 # Create the auteur file
 echo `whoami` > auteur
