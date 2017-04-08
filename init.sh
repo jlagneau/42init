@@ -7,7 +7,7 @@
 #    By: jlagneau <jlagneau@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2015/12/01 06:20:42 by jlagneau          #+#    #+#              #
-#    Updated: 2016/07/20 03:22:08 by jlagneau         ###   ########.fr        #
+#    Updated: 2017/04/08 08:36:37 by jlagneau         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,14 +24,7 @@ echo ''
 
 # arg number not equal 1
 if [[ "$#" -ne 1 ]]; then
-    echo "Usage : $_ [PROJECT_NAME]"
-    exit 1
-fi
-
-# arg is already an existing file
-if [[ -e "$1" ]]; then
-    echo "Cannot create directory $1."
-    echo "A file with this name already exists."
+    echo "Usage : `basename "$0"` [PROJECT_NAME]"
     exit 1
 fi
 
@@ -48,14 +41,7 @@ exec_dir=$(dirname `perl -e 'use Cwd "abs_path";print abs_path(shift)' $0`)
 #
 # RUN
 #
-
 echo 'Creating project files... [\033[0;33m'${project_name}'\033[0m]'
-
-# Create directory
-mkdir ${project_name}
-
-# Move into directory
-pushd ${project_name}
 
 # Copy skeleton into directory and search and replace program name
 env GLOBIGNORE=". .." cp -a ${exec_dir}/skel/* ${exec_dir}/skel/.* ./
@@ -63,24 +49,24 @@ find . -type f -exec perl -pi -e s,__PROJECT_NAME__,${project_name},g {} \;
 find . -type f -exec perl -pi -e s,__PROJECT_NAME_UPPERCASE__,${project_name_uppercase},g {} \;
 mv include/header_template.h include/${project_name}.h
 
-# Create the auteur file
-echo `whoami` > auteur
+# Create the "auteur" file if it doesn't exists
+if [[ ! -e "auteur" ]]; then
+    echo `whoami` > auteur
+fi
 
-# Create include file
-mkdir -p include
-touch include/${project_name}.h
-
-# Create a README.md file
-echo "# "${project_name} > README.md
+# Create a README.md file if it doesn't exists
+if [[ ! -e "README.md" ]]; then
+    echo "# "${project_name} > README.md
+fi
 
 # Initialize git and add libft
 echo 'Initialize git repository...'
-git init --quiet .
+if [[ ! -e ".git" ]]; then
+    git init --quiet .
+fi
 git submodule --quiet add https://github.com/`whoami`/libft.git
 git add -A .
-git commit --quiet -m "[42init] Initial commit: Hello World"
-
-# Return to previous directory
-popd
+git commit --quiet -m "[:rocket:42init] Initial commit: :star: Hello World"
+git checkout --quiet -B develop
 
 echo 'Project ready !'
