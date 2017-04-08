@@ -7,7 +7,7 @@
 #    By: jlagneau <jlagneau@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2015/12/01 06:20:42 by jlagneau          #+#    #+#              #
-#    Updated: 2017/04/08 08:36:37 by jlagneau         ###   ########.fr        #
+#    Updated: 2017/04/08 10:24:42 by jlagneau         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,16 +32,17 @@ fi
 # INIT
 #
 
-# get name of the project to init
-project_name=$1
-project_name_uppercase="$(echo "$1" | tr '[:lower:]' '[:upper:]')"
+# get name of the project to init, replace spaces by underscore and use lower case
+project_name="$(echo ${1// /_} | tr '[:upper:]' '[:lower:]')"
+# get name of the project in upper case
+project_name_uppercase="$(echo ${project_name} | tr '[:lower:]' '[:upper:]')"
 # get the real path of the exec script
 exec_dir=$(dirname `perl -e 'use Cwd "abs_path";print abs_path(shift)' $0`)
 
 #
 # RUN
 #
-echo 'Creating project files... [\033[0;33m'${project_name}'\033[0m]'
+echo "Creating project files... [\033[0;33m${1}\033[0m]"
 
 # Copy skeleton into directory and search and replace program name
 env GLOBIGNORE=". .." cp -a ${exec_dir}/skel/* ${exec_dir}/skel/.* ./
@@ -56,7 +57,7 @@ fi
 
 # Create a README.md file if it doesn't exists
 if [[ ! -e "README.md" ]]; then
-    echo "# "${project_name} > README.md
+    echo "# ${1}" > README.md
 fi
 
 # Initialize git and add libft
@@ -66,7 +67,6 @@ if [[ ! -e ".git" ]]; then
 fi
 git submodule --quiet add https://github.com/`whoami`/libft.git
 git add -A .
-git commit --quiet -m "[:rocket:42init] Initial commit: :star: Hello World"
-git checkout --quiet -B develop
+git commit --quiet -m "[:rocket: 42init] Initial commit: Hello World"
 
 echo 'Project ready !'
