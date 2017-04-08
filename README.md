@@ -1,6 +1,6 @@
 # 42 init
 
-:rocket: This is a project initializer for C project at 42 Born2Code.
+:rocket: This is a project initializer for C project at 42Born2Code.
 
 ## Installation
 
@@ -23,5 +23,10 @@ Create a directory and execute the command from inside the directory:
 
 Don't hesitate to fork this project to suit your needs.
 
-You can replace everything in skel by your own file and directories.
-You can use `__PROJECT_NAME__` and `__PROJECT_NAME_UPPERCASE__` placeholder in your skel files for your real project name.
+You can replace everything in the 'skel' directory by your own file and directories.
+You can use `__PROJECT_NAME__` and `__PROJECT_NAME_UPPERCASE__` placeholder in your
+skel files for your real project name.
+
+## License
+
+MIT
