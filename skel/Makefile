@@ -39,7 +39,7 @@ DEPSFLAGS  = -MMD -MF"$(subst $(OBJS_PATH),$(DEPS_PATH),$(@:.o=.d))"
 
 # Files
 SRCS      := $(shell find src -type f)
-SRCS_SUB  := $(subst $(SRCS_PATH),, $(shell find src -type d -mindepth 1))
+SRCS_SUB  := $(subst $(SRCS_PATH),, $(shell find src -mindepth 1 -type d))
 
 OBJS      := $(subst $(SRCS_PATH), $(OBJS_PATH), $(SRCS:.c=.o))
 DEPS      := $(subst $(SRCS_PATH), $(DEPS_PATH), $(SRCS:.c=.d))
