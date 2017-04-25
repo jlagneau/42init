@@ -16,82 +16,104 @@
 
 # Name of the executable
 NAME       = __PROJECT_NAME__
+DEB_NAME   = __PROJECT_NAME___debug
 
 # Exec
 CC        ?= gcc
 RM         = rm -rf
 
 # Directories
-LIB_PATH   = libft/
-LIBH_PATH  = libft/include/
+LIBFT_PATH = libft
 
-SRCS_PATH  = src/
-HEAD_PATH  = include/
+SRCS_PATH  = src
+OBJS_PATH  = build/obj
+DEPS_PATH  = build/dep
 
-OBJS_PATH  = .obj/
-DEPS_PATH  = .dep/
+HEADERS    = include $(LIBFT_PATH)/include
 
 # Flags
-CFLAGS    += -Wall -Wextra -Werror
-CPPFLAGS  += -I$(HEAD_PATH) -I$(LIBH_PATH)
-LDFLAGS   += -L$(LIB_PATH)
-DEPSFLAGS  = -MMD -MF"$(DEPS_PATH)$(notdir $(@:.o=.d))"
+CFLAGS    ?= -Wall -Wextra -Werror
+CPPFLAGS  += $(addprefix -I, $(HEADERS))
+LDFLAGS   += -L$(LIBFT_PATH)
+DEPSFLAGS  = -MMD -MF"$(subst $(OBJS_PATH),$(DEPS_PATH),$(@:.o=.d))"
 
 # Files
 SRCS      := $(shell find src -type f)
+SRCS_SUB  := $(subst $(SRCS_PATH),, $(shell find src -type d -mindepth 1))
 
-OBJS       = $(addprefix $(OBJS_PATH), $(notdir $(SRCS:.c=.o)))
-DEPS       = $(addprefix $(DEPS_PATH), $(notdir $(SRCS:.c=.d)))
+OBJS      := $(subst $(SRCS_PATH), $(OBJS_PATH), $(SRCS:.c=.o))
+DEPS      := $(subst $(SRCS_PATH), $(DEPS_PATH), $(SRCS:.c=.d))
 
-DEB_OBJS   = $(OBJS:.o=_debug.o)
-DEB_DEPS   = $(DEPS:.d=_debug.d)
+DEB_OBJS  := $(OBJS:.o=_debug.o)
+DEB_DEPS  := $(DEPS:.d=_debug.d)
+
+#
+# Macro
+#
+
+define CREATE_BUILD_DIR
+@mkdir -p $(OBJS_PATH) $(addprefix $(OBJS_PATH), $(SRCS_SUB))
+@mkdir -p $(DEPS_PATH) $(addprefix $(DEPS_PATH), $(SRCS_SUB))
+endef
+
+define COMPILE
+$(CREATE_BUILD_DIR)
+$(CC) $(CFLAGS) $(CPPFLAGS) $(DEPSFLAGS) -c $< -o $@
+endef
+
+define MAKELIB
+@-git submodule update --init --recursive
+@make -C $(LIBFT_PATH) $(1)
+endef
+
+define LINK
+$(CC) $^ $(LDFLAGS) -o $@
+endef
 
 #
 # Rules
 #
 
 # Phony.
-.PHONY: all clean fclean norme re redebug
+.PHONY: all clean debug fclean re redebug
 
 # Link the main executable.
 $(NAME): CFLAGS += -O3
 $(NAME): LDFLAGS += -lft
 $(NAME): $(OBJS)
-	@-git submodule update --init --recursive
-	@make -C $(LIB_PATH)
-	$(CC) $^ $(LDFLAGS) -o $@
+	$(MAKELIB)
+	$(LINK)
 
 # Link the debug executable.
-debug: CFLAGS += -g3
-debug: LDFLAGS += -lft_debug
-debug: $(DEB_OBJS)
-	@-git submodule update --init --recursive
-	@make -C $(LIB_PATH) debug
-	$(CC) $^ $(LDFLAGS) -o $@
+$(DEB_NAME): CFLAGS += -g3
+$(DEB_NAME): LDFLAGS += -lft_debug
+$(DEB_NAME): $(DEB_OBJS)
+	$(call MAKELIB, debug)
+	$(LINK)
 
 # Compile the objects.
 $(OBJS_PATH)%.o: $(SRCS_PATH)%.c
-	@mkdir -p $(OBJS_PATH) $(DEPS_PATH)
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEPSFLAGS) -c $< -o $@
+	$(COMPILE)
 
 # Compile the debug objects.
 $(OBJS_PATH)%_debug.o: $(SRCS_PATH)%.c
-	@mkdir -p $(OBJS_PATH) $(DEPS_PATH)
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEPSFLAGS) -c $< -o $@
+	$(COMPILE)
 
 # Make all.
 all: $(NAME)
 
+# Make debug
+debug: $(DEB_NAME)
+
 # Remove the objects and dependencies files.
 clean:
-	$(RM) $(OBJS_PATH) $(DEPS_PATH)
-	@make -C $(LIB_PATH) clean
+	$(call MAKELIB, clean)
+	$(RM) build
 
 # Remove the object, dependencies and executables files.
 fclean:
-	$(RM) $(OBJS_PATH) $(DEPS_PATH)
-	$(RM) $(NAME) $(DEB_NAME)
-	@make -C $(LIB_PATH) fclean
+	$(call MAKELIB, fclean)
+	$(RM) build $(NAME) $(DEB_NAME)
 
 # Clean and rebuild the executable.
 re: fclean all

@@ -1,4 +1,3 @@
-.obj/
-.dep/
+build
 __PROJECT_NAME__
-debug
+__PROJECT_NAME___debug
