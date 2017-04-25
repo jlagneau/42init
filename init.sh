@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env zsh
 # **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
@@ -7,7 +7,7 @@
 #    By: jlagneau <jlagneau@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2015/12/01 06:20:42 by jlagneau          #+#    #+#              #
-#    Updated: 2017/04/25 19:11:52 by jlagneau         ###   ########.fr        #
+#    Updated: 2017/04/25 19:19:43 by jlagneau         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -68,7 +68,7 @@ fi
 if [[ ! -e "README.md" ]]; then
     echo "# ${1}" > README.md
     cat README.md.tpl >> README.md
-    rm README.md.tmp
+    rm README.md.tpl
 fi
 
 # Initialize git and add libft
@@ -76,7 +76,7 @@ echo 'Initialize git repository...'
 if [[ ! -e ".git" ]]; then
     git init --quiet .
 fi
-git checkout -B develop
+git checkout --quiet -B develop
 git submodule --quiet add https://github.com/${username}/libft.git
 git add -A .
 git commit --quiet -m "[:rocket: 42init] Initial commit: Hello World"
