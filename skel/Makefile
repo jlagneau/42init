@@ -6,7 +6,7 @@
 #    By: jlagneau <jlagneau@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2013/11/21 08:29:58 by jlagneau          #+#    #+#              #
-#    Updated: 2017/04/08 10:47:14 by jlagneau         ###   ########.fr        #
+#    Updated: 2017/05/18 12:36:07 by jlagneau         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -23,13 +23,17 @@ CC        ?= gcc
 RM         = rm -rf
 
 # Directories
-LIBFT_PATH = libft
-
 SRCS_PATH  = src
-OBJS_PATH  = build/obj
-DEPS_PATH  = build/dep
+HEAD_PATH  = include
 
-HEADERS    = include $(LIBFT_PATH)/include
+BUILD_PATH = build
+OBJS_PATH  = $(BUILD_PATH)/obj
+DEPS_PATH  = $(BUILD_PATH)/dep
+
+LIBFT_PATH = libft
+LIBFT_HEAD = $(LIBFT_PATH)/include
+
+HEADERS   := $(LIBFT_HEAD) $(shell find $(HEAD_PATH) -type d)
 
 # Flags
 CFLAGS    ?= -Wall -Wextra -Werror
@@ -38,8 +42,9 @@ LDFLAGS   += -L$(LIBFT_PATH)
 DEPSFLAGS  = -MMD -MF"$(subst $(OBJS_PATH),$(DEPS_PATH),$(@:.o=.d))"
 
 # Files
-SRCS      := $(shell find src -type f)
-SRCS_SUB  := $(subst $(SRCS_PATH),, $(shell find src -mindepth 1 -type d))
+SRCS      := $(shell find $(SRCS_PATH) -type f)
+SUB       := $(shell find $(SRCS_PATH) -mindepth 1 -type d)
+SRCS_SUB  := $(subst $(SRCS_PATH),,$(SUB))
 
 OBJS      := $(subst $(SRCS_PATH), $(OBJS_PATH), $(SRCS:.c=.o))
 DEPS      := $(subst $(SRCS_PATH), $(DEPS_PATH), $(SRCS:.c=.d))
@@ -51,19 +56,12 @@ DEB_DEPS  := $(DEPS:.d=_debug.d)
 # Macro
 #
 
-define CREATE_BUILD_DIR
-@mkdir -p $(OBJS_PATH) $(addprefix $(OBJS_PATH), $(SRCS_SUB))
-@mkdir -p $(DEPS_PATH) $(addprefix $(DEPS_PATH), $(SRCS_SUB))
-endef
-
 define COMPILE
-$(CREATE_BUILD_DIR)
 $(CC) $(CFLAGS) $(CPPFLAGS) $(DEPSFLAGS) -c $< -o $@
 endef
 
 define MAKELIB
-@-git submodule update --init --recursive
-@make -C $(LIBFT_PATH) $(1)
+@$(MAKE) -C $(LIBFT_PATH) $(1)
 endef
 
 define LINK
@@ -91,6 +89,16 @@ $(DEB_NAME): $(DEB_OBJS)
 	$(call MAKELIB, debug)
 	$(LINK)
 
+# Create build directories
+$(OBJS): | $(OBJS_PATH) $(DEPS_PATH)
+$(DEB_OBJS): | $(OBJS_PATH) $(DEPS_PATH)
+
+$(OBJS_PATH):
+	mkdir -p $(OBJS_PATH) $(addprefix $(OBJS_PATH), $(SRCS_SUB))
+
+$(DEPS_PATH):
+	mkdir -p $(DEPS_PATH) $(addprefix $(DEPS_PATH), $(SRCS_SUB))
+
 # Compile the objects.
 $(OBJS_PATH)%.o: $(SRCS_PATH)%.c
 	$(COMPILE)
@@ -108,18 +116,20 @@ debug: $(DEB_NAME)
 # Remove the objects and dependencies files.
 clean:
 	$(call MAKELIB, clean)
-	$(RM) build
+	$(RM) $(BUILD_PATH)
 
 # Remove the object, dependencies and executables files.
 fclean:
 	$(call MAKELIB, fclean)
-	$(RM) build $(NAME) $(DEB_NAME)
+	$(RM) $(BUILD_PATH) $(NAME) $(DEB_NAME)
 
 # Clean and rebuild the executable.
-re: fclean all
+re: | fclean
+	@$(MAKE) all
 
 # Clean and rebuild the debug executable.
-redebug: fclean debug
+redebug: | fclean
+	@$(MAKE) debug
 
 # Include dependencies for objects.
 -include $(DEPS)
