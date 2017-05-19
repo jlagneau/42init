@@ -1,4 +1,3 @@
-
 empty_summary
 
 ---
@@ -14,7 +13,7 @@ to compile, use the command:
 ## Documentation
 
 Please read the [Makefile][1] to know what you can do with it. The project
-**must** respect [42Born2Code norme][2].
+**must** respect [42Born2Code's norme][2].
 
 ## License
 
